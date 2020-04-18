@@ -1,0 +1,113 @@
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+//connect to mongoose
+
+mongoose.connect('mongodb://localhost/bookstore');
+
+Genre = require('./models/genre'); 
+Book = require('./models/book');
+
+var db = mongoose.connection;
+
+
+app.get('/',function(req,res){
+    res.send('Hello Bitch');
+}); 
+
+app.get('/api/genres',function(req,res){
+//    res.send
+    Genre.getGenres(function(err,genres){
+        if(err){
+            throw err;
+        }
+        res.json(genres); 
+    });
+});
+
+app.post('/api/genres',function(req,res){
+    //    res.send
+        var genre = req.body;
+        Genre.addGenres(genre,function(err,genre){
+            if(err){
+                throw err;
+            }
+            res.json(genre);
+        });
+    });
+
+app.put('/api/genres/:_id',function(req,res){
+    //    res.send
+        var id = req.params._id;
+        var genre = req.body;
+        Genre.updateGenres(id,genre,{},function(err,genre){
+            if(err){
+                throw err;
+            }
+            res.json(genre);
+        });
+    });
+    
+    app.delete('/api/genres/:_id',function(req,res){
+        //    res.send
+            var id = req.params._id;
+            var genre = req.body;
+            Genre.removeGenre(id,function(err,genre){
+                if(err){
+                    throw err;
+                }
+                res.json(genre);
+            });
+        });
+
+
+
+app.get('/api/books',function(req,res){
+    //    res.send
+        Book.getBooks(function(err,books){
+            if(err){
+                throw err;
+            }
+            res.json(books);
+        });
+    });
+
+app.get('/api/books/:_id',function(req,res){
+//    res.send
+    Book.getBookById(req.params._id,function(err,books){
+        if(err){
+            throw err;
+        }
+        res.json(books);
+    });
+});    
+
+app.post('/api/books',function(req,res){
+    //    res.send
+        var book = req.body;
+        Book.addBook(book,function(err,book){
+            if(err){
+                throw err;
+            }
+            res.json(book);
+        });
+    });
+
+    app.put('/api/books/:_id', (req, res) => {
+        var id = req.params._id;
+        var book = req.body;
+        Book.updateBook(id, book, {}, (err, book) => {
+            if(err){
+                throw err;
+            }
+            res.json(book);
+        });
+    });
+
+app.listen(3000);
+console.log('Running on port 3000');
+
